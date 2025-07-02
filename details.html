@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Details</title>
+  <style>
+    body {
+      font-family: Arial;
+      margin: 30px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .slider {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .slider img {
+      width: 200px;
+      height: 150px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .meta, .reviews {
+      margin-top: 15px;
+      padding: 10px;
+      border-left: 4px solid #ccc;
+      background: #f9f9f9;
+    }
+
+    .review {
+      margin-bottom: 10px;
+      border-bottom: 1px dashed #ddd;
+      padding-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="productDetails"></div>
+
+  <script>
+    const product = JSON.parse(localStorage.getItem("selectedProduct"));
+    const container = document.getElementById("productDetails");
+
+    if (product) {
+      // Repeat main image to simulate slider
+      let sliderImgs = "";
+      for (let i = 0; i < 4; i++) {
+        const img = product.images?.[0] || product.thumbnail || "https://via.placeholder.com/200x150";
+        sliderImgs += `<img src="${img}" alt="Product Image ${i + 1}">`;
+      }
+
+      let reviewsHTML = "";
+      if (product.reviews?.length) {
+        product.reviews.forEach((r) => {
+          reviewsHTML += `
+            <div class="review">
+              <strong>${r.reviewerName}</strong> (${r.rating}★)<br>
+              <em>${new Date(r.date).toLocaleDateString()}</em><br>
+              <p>${r.comment}</p>
+            </div>
+          `;
+        });
+      }
+
+      container.innerHTML = `
+        <h2>${product.title}</h2>
+        <div class="slider">${sliderImgs}</div>
+        <p><strong>Description:</strong> ${product.description}</p>
+        <p><strong>Brand:</strong> ${product.brand}</p>
+        <p><strong>Category:</strong> ${product.category}</p>
+        <p><strong>Price:</strong> ₹${product.price}</p>
+        <p><strong>Discount:</strong> ${product.discountPercentage}%</p>
+        <p><strong>Stock:</strong> ${product.stock}</p>
+        <p><strong>Rating:</strong> ${product.rating}</p>
+        <p><strong>SKU:</strong> ${product.sku || "N/A"}</p>
+        <p><strong>Weight:</strong> ${product.weight || "N/A"}g</p>
+        <p><strong>Dimensions:</strong> ${product.dimensions ? `${product.dimensions.width} x ${product.dimensions.height} x ${product.dimensions.depth} cm` : "N/A"}</p>
+        <p><strong>Warranty:</strong> ${product.warrantyInformation || "N/A"}</p>
+        <p><strong>Shipping Info:</strong> ${product.shippingInformation || "N/A"}</p>
+        <p><strong>Availability:</strong> ${product.availabilityStatus || "N/A"}</p>
+        <p><strong>Return Policy:</strong> ${product.returnPolicy || "N/A"}</p>
+        <p><strong>Minimum Order:</strong> ${product.minimumOrderQuantity || "N/A"}</p>
+        <div class="meta">
+          <p><strong>Created At:</strong> ${product.meta?.createdAt || "N/A"}</p>
+          <p><strong>Updated At:</strong> ${product.meta?.updatedAt || "N/A"}</p>
+          <p><strong>Barcode:</strong> ${product.meta?.barcode || "N/A"}</p>
+          <p><img src="${product.meta?.qrCode || ''}" width="100" alt="QR Code"></p>
+        </div>
+        <div class="reviews">
+          <h3>Reviews</h3>
+          ${reviewsHTML || "<p>No reviews available.</p>"}
+        </div>
+      `;
+    } else {
+      container.innerHTML = "<p>Product not found.</p>";
+    }
+  </script>
+
+</body>
+</html>
